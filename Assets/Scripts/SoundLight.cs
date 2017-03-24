@@ -47,7 +47,7 @@ public class SoundLight : MonoBehaviour {
 		if (level>lastLevel) {
 			targetLevel = level;
 		}else {
-			targetLevel = (lastLevel * 4 + level) / 5; //Mathf.Lerp(lastLevel, level, lightScaleSpeed);
+			targetLevel = (lastLevel * 7 + level) / 8; //Mathf.Lerp(lastLevel, level, lightScaleSpeed);
 		}
 
 		if (index == 0) {

@@ -53,10 +53,11 @@ public class LightsManager : MonoBehaviour {
 			transform.Find("light" + i).GetComponent<SoundLight>().setIntensity(spectrum[spectrumItem]);
 			transform.Find("light" + i).GetComponent<SoundLight>().setIntensity(lightLevels[i]);
 		}
-		float floorIntensity = AudioAnalyzer.Instance.maxV;
-		if (floorIntensity < 0.2f) floorIntensity = 0.02f;
-		if (floorIntensity < 0.3f) floorIntensity *= 0.5f;
-		if (floorIntensity > 0.6f) floorIntensity *= 2;
+		//float floorIntensity = AudioAnalyzer.Instance.maxV;
+		float floorIntensity = AudioAnalyzer.Instance.rmsValue/3;
+		//if (floorIntensity < 0.2f) floorIntensity = 0.02f;
+		if (floorIntensity < 0.7f) floorIntensity *= 0.5f;
+		if (floorIntensity > 0.7f) floorIntensity *= 3;
 		GameObject.Find("Floor").GetComponent<SoundLight>().setIntensity(floorIntensity);
 	}
 }
