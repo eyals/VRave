@@ -63,7 +63,7 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 		spectrum = new float[qSamples];
 		fSample = AudioSettings.outputSampleRate;
 		audio = GetComponent<AudioSource>();
-		trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples));
+		trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples)/2);
 	}
 	public float maxV;
 	public int maxN;
