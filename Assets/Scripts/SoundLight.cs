@@ -87,7 +87,7 @@ public class SoundLight : MonoBehaviour {
 		}
 		if (enableSparks) {
 			if (!sparks) return;
-			if (targetLevel>0.3f) {
+			if (targetLevel> sparksThreshold) {
 				sparks.Play();		
 			}else {
 				sparks.Stop();

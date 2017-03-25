@@ -45,6 +45,8 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 
 	// Source: http://answers.unity3d.com/questions/157940/getoutputdata-and-getspectrumdata-they-represent-t.html
 	// I added the trimmed spectrum
+	//string mp3StreamUrl = "http://103.195.103.98/wp-includes/inc/stream.php?id=238041960&t=srvsc";
+	//string mp3StreamUrl = "https://ia600309.us.archive.org/28/items/Mp3Songs_175/actionreplayy04www.songs.pk.mp3";
 	public int qSamples = 1024;  // array size
 	public int spectrumTrimSize = 20; //sets the size of trimmedSpectrum
 	public float refValue = 0.1f; // RMS value for 0 dB
@@ -60,10 +62,16 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	private AudioSource audio;
  
 	void Start() {
+		audio = GetComponent<AudioSource>();
+		/*
+		WWW www = new WWW(mp3StreamUrl);  // start a download of the given URL
+		AudioClip clip = www.GetAudioClip(false, true); // 2D, streaming
+		audio.clip = clip;
+		audio.Play();
+		*/
 		samples = new float[qSamples];
 		spectrum = new float[qSamples];
 		fSample = AudioSettings.outputSampleRate;
-		audio = GetComponent<AudioSource>();
 		//trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples)/2);
 	}
 	public float maxV;
@@ -104,6 +112,7 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	public GUIText display; // drag a GUIText here to show results
  
  void Update() {
+		
 		if (Input.GetKeyDown("p")) {
 			audio.Play();
 		}
