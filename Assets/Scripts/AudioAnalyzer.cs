@@ -44,7 +44,9 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 		*/
 
 	// Source: http://answers.unity3d.com/questions/157940/getoutputdata-and-getspectrumdata-they-represent-t.html
+	// I added the trimmed spectrum
 	public int qSamples = 1024;  // array size
+	public int spectrumTrimSize = 20; //sets the size of trimmedSpectrum
 	public float refValue = 0.1f; // RMS value for 0 dB
 	public float threshold = 0.02f;      // minimum amplitude to extract pitch
 	public float rmsValue;   // sound level - RMS
@@ -54,7 +56,6 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	public float[] samples; // audio samples
 	public float[] spectrum; // audio spectrum
 	public float[] trimmedSpectrum; //part of the full spectrum
-	private int trimSize;
 	private float fSample;
 	private AudioSource audio;
  
@@ -63,7 +64,7 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 		spectrum = new float[qSamples];
 		fSample = AudioSettings.outputSampleRate;
 		audio = GetComponent<AudioSource>();
-		trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples)/2);
+		//trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples)/2);
 	}
 	public float maxV;
 	public int maxN;
@@ -79,8 +80,8 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 
 		// get sound spectrum
 		audio.GetSpectrumData(spectrum, 0, FFTWindow.BlackmanHarris);
-		trimmedSpectrum = new float[trimSize];
-		System.Array.Copy(spectrum, trimmedSpectrum, trimSize);
+		trimmedSpectrum = new float[spectrumTrimSize];
+		System.Array.Copy(spectrum, trimmedSpectrum, spectrumTrimSize);
 	
 		maxV = 0; //volume of laudest sample
 		maxN = 0; // maxN is the index of max

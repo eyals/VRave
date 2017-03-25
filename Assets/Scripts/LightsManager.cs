@@ -14,20 +14,30 @@ public class LightsManager : MonoBehaviour {
 	public float lightHeightMin;
 	public float lightHeightMax;
 	private List<GameObject> lights;
+	private SoundLight floor;
 
 	private void Start() {
 		for (var i=0; i<lightsCount; i++) {
+
 			GameObject light = Instantiate(lightObject, transform);
 			light.name = "light" + i;
-			light.GetComponent<SoundLight>().index = i;
-			float lightAngle = ringAngle / lightsCount * (i - lightsCount / 2);
-			//float lightAngle = Random.Range(0, 360); 
+			//float lightAngle = ringAngle / lightsCount * (i - lightsCount / 2);
+			float lightAngle = Random.Range(0, 360); 
 			light.transform.Rotate(Vector3.up, lightAngle);
-			float lightBulbDistance = Random.Range(lightDistanceMin, lightDistanceMax);
-			float lightBulbHeight = Random.Range(lightHeightMin, lightHeightMax);
-			light.GetComponent<SoundLight>().setPosition(lightBulbDistance, lightBulbHeight);
+
+			SoundLight sl = light.GetComponent<SoundLight>();
+			sl.index = i;
+			sl.distanceFromViewer = Random.Range(lightDistanceMin, lightDistanceMax);
+			sl.height = Random.Range(lightHeightMin, lightHeightMax);
+			float frequencyIndex = Mathf.FloorToInt(i / AudioAnalyzer.Instance.spectrumTrimSize);
+			sl.frequencyRatio = 1/frequencyIndex;//translates frequencyIndex to 0..1 // frequencyIndex / (lightsCount / AudioAnalyzer.Instance.spectrumTrimSize);
+			sl.lightColor = new Color(sl.frequencyRatio, 0f, 1 - sl.frequencyRatio, 1);//red on high frequencies
+			//sl.lightColor = new Color(Random.Range(0.1f, 1), Random.Range(0.1f, 0.1f), Random.Range(0.3f, 0.6f));
+			sl.init();
 		}
-	
+		floor = GameObject.Find("Floor").GetComponent<SoundLight>();
+		floor.lightColor = new Color(0.3f,0.3f,1f, 1f);
+		floor.init();
 
 	}
 
@@ -50,14 +60,13 @@ public class LightsManager : MonoBehaviour {
 			}else {
 				spectrumItem = i % spectrum.Length;
 			}
-			transform.Find("light" + i).GetComponent<SoundLight>().setIntensity(spectrum[spectrumItem]);
-			transform.Find("light" + i).GetComponent<SoundLight>().setIntensity(lightLevels[i]);
+			transform.Find("light" + i).GetComponent<SoundLight>().setLevel(spectrum[spectrumItem]);
+			//transform.Find("light" + i).GetComponent<SoundLight>().setLevel(lightLevels[i]);
 		}
 		//float floorIntensity = AudioAnalyzer.Instance.maxV;
-		float floorIntensity = AudioAnalyzer.Instance.rmsValue/3;
+		float floorIntensity = AudioAnalyzer.Instance.maxV;
 		//if (floorIntensity < 0.2f) floorIntensity = 0.02f;
-		if (floorIntensity < 0.7f) floorIntensity *= 0.5f;
-		if (floorIntensity > 0.7f) floorIntensity *= 3;
-		GameObject.Find("Floor").GetComponent<SoundLight>().setIntensity(floorIntensity);
+		//floorIntensity *= (floorIntensity > 0.8f) ? 3 : 0.02f;
+		floor.setLevel(floorIntensity);
 	}
 }
