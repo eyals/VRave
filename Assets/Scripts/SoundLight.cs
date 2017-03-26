@@ -76,11 +76,13 @@ public class SoundLight : MonoBehaviour {
 			bulb.localScale = new Vector3(bulbScale, bulbScale, bulbScale);
 		}
 		if (enableShake) {
-			if (targetLevel>0.4f) {
-				bulb.localScale *= Random.Range(1f, 1.3f);
-				bulb.localScale *= Mathf.Sqrt(AudioAnalyzer.Instance.rmsValue);
-				float shake = bulb.localScale.x * Random.Range(-0.05f, 0.05f);
-				bulb.localPosition = new Vector3(lightPos.x+ shake, lightPos.y, lightPos.z + bulb.localScale.x * shake); ;
+			if (targetLevel>0.25f) {
+				//bulb.localScale *= Random.Range(1f, 1.3f);
+				//bulb.localScale *= Mathf.Sqrt(AudioAnalyzer.Instance.rmsValue);
+				float shakeSize = 0.1f;
+				float shakeX = bulb.localScale.x * Random.Range(-shakeSize, shakeSize);
+				float shakeZ = bulb.localScale.z * Random.Range(-shakeSize, shakeSize);
+				bulb.localPosition = new Vector3(lightPos.x+shakeX, lightPos.y, lightPos.z+shakeZ); ;
 			}else {
 				bulb.localPosition = lightPos;
 			}
