@@ -7,47 +7,20 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	AudioSource audioSource;
 	private float[] fullSpectrum; //Audio Source data
 	public FFTWindow FffWindowType = FFTWindow.BlackmanHarris;
-	public int sampleRate;
+	//public int sampleRate;
 	//public int spectromSampleRangeLow = 920;
 	//public int spectrumSampleRangeHigh = 1000;
 	//private float volumeSum;
-	private LightsManager lightsManager;
 	[Range(0, 1)]
 	public float spectrumMin = 0.1f;
 	[Range(0, 1)]
 	public float spectrumMax = 0.5f;
 
-	/*
-	void Start () {
-		audioSource = GetComponent<AudioSource>();
-		lightsManager = GameObject.Find("Lights").GetComponent<LightsManager>();
-		//lightsManager.initLights();
-	}
 
-	public float[] currentSpectrum () {
-		fullSpectrum = new float[sampleRate];
-		GetComponent<AudioSource>().GetSpectrumData(fullSpectrum, 0, FffWindowType);
-		int spectrumStart = Mathf.RoundToInt(fullSpectrum.Length * spectrumMin);
-		int spectrumEnd = Mathf.RoundToInt(fullSpectrum.Length * spectrumMax);
-		float[] trimmedSpectrum = new float[spectrumEnd-spectrumStart];
-		System.Array.Copy(fullSpectrum, spectrumStart, trimmedSpectrum, 0, spectrumEnd - spectrumStart);
-		//lightsManager.updateLights(fullSpectrum);
-		return fullSpectrum;
-		
-		
-		//volumeSum = 0f;
-		//for (int i = spectromSampleRangeLow; i <= spectrumSampleRangeHigh; i++) {
-			//volumeSum += spectrum[i];
-		//}
-		//volumeSum = Mathf.Max(volumeSum, noiseThreshold);
-	}
-		*/
-
-	// Source: http://answers.unity3d.com/questions/157940/getoutputdata-and-getspectrumdata-they-represent-t.html
-	// I added the trimmed spectrum
+	// Based on: http://answers.unity3d.com/questions/157940/getoutputdata-and-getspectrumdata-they-represent-t.html
 	//string mp3StreamUrl = "http://103.195.103.98/wp-includes/inc/stream.php?id=238041960&t=srvsc";
 	//string mp3StreamUrl = "https://ia600309.us.archive.org/28/items/Mp3Songs_175/actionreplayy04www.songs.pk.mp3";
-	public int qSamples = 1024;  // array size
+	public int spectrumSize = 1024;  // array size
 	public int spectrumTrimSize = 20; //sets the size of trimmedSpectrum
 	public float refValue = 0.1f; // RMS value for 0 dB
 	public float threshold = 0.02f;      // minimum amplitude to extract pitch
@@ -69,8 +42,8 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 		audio.clip = clip;
 		audio.Play();
 		*/
-		samples = new float[qSamples];
-		spectrum = new float[qSamples];
+		samples = new float[spectrumSize];
+		spectrum = new float[spectrumSize];
 		fSample = AudioSettings.outputSampleRate;
 		//trimSize = Mathf.RoundToInt(Mathf.Sqrt(qSamples)/2);
 	}
@@ -79,10 +52,10 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	void AnalyzeSound() {
 		audio.GetOutputData(samples, 0); // fill array with samples
 		float sum = 0;
-		for (int i = 0; i < qSamples; i++) {
+		for (int i = 0; i < spectrumSize; i++) {
 			sum += samples[i] * samples[i]; // sum squared samples
 		}
-		rmsValue = Mathf.Sqrt(sum / qSamples); // rms = square root of average
+		rmsValue = Mathf.Sqrt(sum / spectrumSize); // rms = square root of average
 		dbValue = 20 * Mathf.Log10(rmsValue / refValue); // calculate dB
 		if (dbValue < -160) dbValue = -160; // clamp it to -160dB min
 
@@ -93,7 +66,7 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 	
 		maxV = 0; //volume of laudest sample
 		maxN = 0; // maxN is the index of max
-		for (int i = 0; i < qSamples; i++) { // find max 
+		for (int i = 0; i < spectrumSize; i++) { // find max 
 			if (spectrum[i] > maxV && spectrum[i] > threshold) {
 				maxV = spectrum[i];
 				maxN = i; 
@@ -101,26 +74,40 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 		}
 		float freqN = maxN; // pass the index of the loudest sample to a float variable
 		// interpolate index using neighbours
-		if (maxN > 0 && maxN < qSamples - 1) { 
+		if (maxN > 0 && maxN < spectrumSize - 1) { 
 			float dL = spectrum[maxN - 1] / spectrum[maxN];
 			float dR = spectrum[maxN + 1] / spectrum[maxN];
 			freqN += 0.5f * (dR * dR - dL * dL);
 		}
-		pitchValue = freqN * (fSample / 2) / qSamples; // convert index to frequency
+		pitchValue = freqN * (fSample / 2) / spectrumSize; // convert index to frequency
 	}
 
-	public GUIText display; // drag a GUIText here to show results
- 
- void Update() {
+	public float[] getTrimmedSpectrum(float min, float max) {
+		int rangeMin = Mathf.RoundToInt(min * spectrumSize);
+		int rangeMax = Mathf.RoundToInt(max * spectrumSize);
+		int rangeSize = rangeMax - rangeMin;
+		float[] s = new float[rangeSize];
+		System.Array.Copy(spectrum, rangeMin, s, 0, rangeSize);
+		return s;
+
+	}
+	public float[] getTrimmedSpectrum(float size) {
+		int rangeSize = Mathf.RoundToInt(size * spectrumSize);
+		float[] s = new float[rangeSize];
+		System.Array.Copy(spectrum, s, rangeSize);
+		return s;
+	}
+
+	void Update() {
 		
 		if (Input.GetKeyDown("p")) {
-			audio.Play();
+			if (audio.isPlaying) {
+				audio.Pause();
+			}else {
+				audio.Play();
+			}
+			
 		}
 		AnalyzeSound();
-		if (display) {
-			display.text = "RMS: " + rmsValue.ToString("F2") +
-			" (" + dbValue.ToString("F1") + " dB)\n" +
-			"Pitch: " + pitchValue.ToString("F0") + " Hz";
-		}
 	}
 }

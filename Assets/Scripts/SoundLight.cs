@@ -6,6 +6,7 @@ public class SoundLight : MonoBehaviour {
 
 	public int index;
 	private Transform bulb;
+	private Renderer bulbRend;
 	//public float lightScale = 10000000f;
 	private float lastLevel = 0;
 	public float lightScaleSpeed = 0.1f;
@@ -28,16 +29,19 @@ public class SoundLight : MonoBehaviour {
 	public float frequencyRatio;// 0..1 - 0 is bass, 1 is trebble
 	private ParticleSystem sparks;
 	public float sparksThreshold = 0.3f;
+	public float hue;
 
 
 	void Awake () {
 		bulb = transform.Find("Bulb");
-		bulbMaterial = bulb.GetComponent<Renderer>().material;
+		bulbRend = bulb.GetComponent<Renderer>();
+		bulbMaterial = bulbRend.material;
 		pole = transform.Find("Pole");
 
 	}
 
-	public void init() {
+	public void reset() {
+		//lightColor = Color.HSVToRGB(hue, 1, 1);
 		bulb.localPosition = new Vector3(0, height, distanceFromViewer);
 		lightPos = bulb.localPosition;
 		if (pole) {
@@ -45,11 +49,15 @@ public class SoundLight : MonoBehaviour {
 		}
 		if (enableSparks) {
 			sparks = bulb.transform.Find("Sparks").gameObject.GetComponent<ParticleSystem>();
+			//sparks.startColor = lightColor;
 		}
 	}
 
 
 	public void setLevel(float level) {
+
+		if (!bulbRend.isVisible) return;
+
 		if (level < audioMinThreshold) level = 0;
 		float targetLevel;
 
