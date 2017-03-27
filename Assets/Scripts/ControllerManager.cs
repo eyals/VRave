@@ -36,6 +36,13 @@ public class ControllerManager : Singleton<ControllerManager> {
 		Transform LeftHandAnchor = GameObject.Find("LeftHandAnchor").transform;
 		primaryHand = GameObject.Find("PrimaryHand");
 		secondaryHand = GameObject.Find("SecondaryHand");
+		if (!primaryHand) {
+			primaryHand = new GameObject("PrimaryHand");
+		}
+		if (!secondaryHand) {
+			secondaryHand = new GameObject("SecondaryHand");
+		}
+
 		if (primaryHand) {
 			primaryHand.transform.parent = rightHanded ? RightHandAnchor : LeftHandAnchor;
 			primaryHand.transform.localPosition = Vector3.zero;

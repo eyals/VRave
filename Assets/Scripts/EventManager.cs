@@ -53,7 +53,7 @@ public class EventManager : MonoBehaviour {
 	}
 
 	public static void TriggerEvent(string eventName) {
-		//print("Event fired: " + eventName + " .... " +Time.fixedTime);
+		print("Event fired: " + eventName + " .... " +Time.fixedTime);
 		UnityEvent thisEvent = null;
 		if (instance.eventDictionary.TryGetValue(eventName, out thisEvent)) {
 			thisEvent.Invoke();

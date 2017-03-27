@@ -11,10 +11,11 @@ public class SoundLight : MonoBehaviour {
 	private float lastLevel = 0;
 	public float lightScaleSpeed = 0.1f;
 	public float maxScale = 1f;
+	private float minLevel = 0.02f;
 	public Color lightColor;
 	private Material bulbMaterial;
-	public float lightIntensityFacor = 20f;
-	private float lightScaleFacor = 0.8f;
+	private float lightIntensityFacor = 5f;
+	private float lightScaleFacor = 3f;
 	public float audioMinThreshold = 0.05f;
 	public bool enableScale = true;
 	public bool enableMove = true;
@@ -26,10 +27,11 @@ public class SoundLight : MonoBehaviour {
 	public float retractSpeedFactor = 1;
 	public float distanceFromViewer;
 	public float height;
-	public float frequencyRatio;// 0..1 - 0 is bass, 1 is trebble
 	private ParticleSystem sparks;
-	public float sparksThreshold = 0.3f;
+	private float sparksThreshold = 0.3f;
+	private float shakeThreshold = 0.3f;
 	public float hue;
+	public float targetLevel;
 
 
 	void Awake () {
@@ -58,17 +60,16 @@ public class SoundLight : MonoBehaviour {
 
 		if (!bulbRend.isVisible) return;
 
-		if (level < audioMinThreshold) level = 0;
-		float targetLevel;
+		if (level < audioMinThreshold) level = minLevel;
 
 		float retractSpeed = Mathf.Clamp(level,0.01f,1)* retractSpeedFactor;
-
 		if (level>lastLevel) {
 			targetLevel = level;
 		}else {
 			targetLevel = (lastLevel + level*retractSpeed) / (1+retractSpeed); //Mathf.Lerp(lastLevel, level, lightScaleSpeed);
 		}
-		//if (index == 3) print(level + "->" + targetLevel);
+		lastLevel = targetLevel;
+
 
 		bulbMaterial.SetColor("_EmissionColor", lightColor * targetLevel * lightIntensityFacor);
 
@@ -76,15 +77,16 @@ public class SoundLight : MonoBehaviour {
 			//float bulbScale = lightScale * targetLevel * targetLevel;
 			float bulbScale = targetLevel* lightScaleFacor;
 			//bulbScale *= (1 - frequencyRatio);
-			if (targetLevel > 0.2f) { bulbScale *= 4; }
-			if (targetLevel > 0.4f) { bulbScale *= 8; }
-			//if (targetLevel > 0.8f) { bulbScale *= 2; }
-			if (targetLevel > 0.9f) { bulbScale *= 2; }
-			
+			//bulbScale *= (1 - AudioAnalyzer.Instance.volAvg);
+			if (targetLevel > 0.2f) { bulbScale *= 2; }
+			//if (targetLevel > 0.4f) { bulbScale *= 8; }
+			if (targetLevel > 0.6f) { bulbScale *= 2; }
+			//if (targetLevel > 0.9f) { bulbScale *= 2; }
+
 			bulb.localScale = new Vector3(bulbScale, bulbScale, bulbScale);
 		}
 		if (enableShake) {
-			if (targetLevel>0.25f) {
+			if (targetLevel> shakeThreshold) {
 				//bulb.localScale *= Random.Range(1f, 1.3f);
 				//bulb.localScale *= Mathf.Sqrt(AudioAnalyzer.Instance.rmsValue);
 				float shakeSize = 0.1f;
@@ -95,8 +97,7 @@ public class SoundLight : MonoBehaviour {
 				bulb.localPosition = lightPos;
 			}
 		}
-		if (enableSparks) {
-			if (!sparks) return;
+		if (enableSparks && sparks) {
 			if (targetLevel> sparksThreshold) {
 				sparks.Play();		
 			}else {
@@ -120,9 +121,9 @@ public class SoundLight : MonoBehaviour {
 			pole.GetComponent<Renderer>().material = bulbMaterial;
 			float targetHeight = bulb.localPosition.y + bulb.localScale.y / 2 + pole.localScale.y / 2;
 			pole.localPosition = new Vector3(pole.localPosition.x, targetHeight, pole.localPosition.z);
-			float poleThickness = 0.1f * targetLevel* targetLevel;
+			float poleThickness = 0.001f * distanceFromViewer;
 			pole.localScale = new Vector3(poleThickness, pole.localScale.y, poleThickness);
 		}
-		lastLevel = targetLevel;
+
 	}
 }

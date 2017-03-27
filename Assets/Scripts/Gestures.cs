@@ -8,8 +8,11 @@ public class Gestures : MonoBehaviour {
 	Transform hand;
 	Vector3 initialHandPos;
 	Vector3 currentHandPos, lastHandPos;
-	Vector3 currentHandVelocity, lastHandVelocity;
+	private Vector3 currentHandVelocity, lastHandVelocity;
+	public float  currentHandVelocityMagnitude;
 	Rigidbody rb;
+	[Range (0.01f,0.1f)]
+	public float handBoomThreshold;
 
 	void Start () {
 		hand = ControllerManager.Instance.primaryHand.transform;
@@ -23,9 +26,10 @@ public class Gestures : MonoBehaviour {
 	void Update () {
 		currentHandPos = hand.position;
 		currentHandVelocity = currentHandPos - lastHandPos;
+		currentHandVelocityMagnitude = currentHandVelocity.magnitude;
 		float velocityChange = Vector3.Distance(lastHandVelocity, currentHandVelocity);
 		//print(velocityChange);
-		if (velocityChange > 0.05f) {
+		if (velocityChange > handBoomThreshold) {
 			EventManager.TriggerEvent("HandBoom");
 		}
 		lastHandPos = currentHandPos;

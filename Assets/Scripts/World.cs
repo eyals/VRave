@@ -7,10 +7,13 @@ using UnityEngine;
 public class World : Singleton<World> {
 
 	public static Vector3 viewerPosition;
-	public static GameObject player;
+	public static Vector3 viewerRotation;
+	public static Transform player;
+	public static Transform camera;
 
 	void Awake() {
-		player = GameObject.FindWithTag("Player");
+		player = GameObject.FindWithTag("Player").transform;
+		camera = GameObject.Find("CenterEyeAnchor").transform;
 	}
 
 	void Start () {
@@ -18,7 +21,7 @@ public class World : Singleton<World> {
 		
 	}
 	void Update() {
-		//viewerPosition = GameObject.Find("CenterEyeAnchor").transform.position;
+		
 	}
 
 
