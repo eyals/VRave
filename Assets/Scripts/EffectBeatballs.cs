@@ -7,17 +7,17 @@ public class EffectBeatballs : MonoBehaviour {
 	public GameObject lightObject;
 	[Range(1, 1000)]
 	public int lightsCount;
-	[Range(1, 1000)]
-	public float ringAngle;
-	public float lightDistanceMin;
-	public float lightDistanceMax;
-	public float lightHeightMin;
-	public float lightHeightMax;
+	[Range(0, 10)]
+	public float lightDistanceMin, lightDistanceMax;
+	[Range(0, 10)]
+	public float lightHeightMin, lightHeightMax;
 	//private List<GameObject> lightObjects;
-	private SoundLight floor;
-	public Color colorScaleMin;
-	public Color colorScaleMax;
+	private SoundLight floorLight;
+	public Color colorRangeMin, colorRangeMax;
 	private Transform lights;
+	[Range(0.005f,0.2f)]
+	public float spectrumRangeMax;
+	private float lastSpectrumRangeMax;
 
 	private void Start() {
 		lights = new GameObject("lights").transform;
@@ -32,12 +32,12 @@ public class EffectBeatballs : MonoBehaviour {
 	private void Randomize() {
 
 		
-		colorScaleMin = Random.ColorHSV();
-		colorScaleMax = Random.ColorHSV();
+		colorRangeMin = Random.ColorHSV();
+		colorRangeMax = Random.ColorHSV();
 		float minHue, minColorS, minColorV;
 		float maxHue, maxColorS, maxColorV;
-		Color.RGBToHSV(colorScaleMin, out minHue, out minColorS, out minColorV);
-		Color.RGBToHSV(colorScaleMax, out maxHue, out maxColorS, out maxColorV);
+		Color.RGBToHSV(colorRangeMin, out minHue, out minColorS, out minColorV);
+		Color.RGBToHSV(colorRangeMax, out maxHue, out maxColorS, out maxColorV);
 		print(minHue + "," + maxHue);
 
 		for (var i = 0; i < lightsCount; i++) {
@@ -55,9 +55,9 @@ public class EffectBeatballs : MonoBehaviour {
 		}
 
 
-		floor = transform.Find("Floor").GetComponent<SoundLight>();
-		floor.lightColor = randomColorBetweetHues(minHue, maxHue);
-		floor.reset();
+		floorLight = transform.Find("Floor").GetComponent<SoundLight>();
+		floorLight.lightColor = randomColorBetweetHues(minHue, maxHue);
+		floorLight.reset();
 
 		ParticleSystem particlesSides = transform.Find("Particles").Find("Sides").gameObject.GetComponent<ParticleSystem>();
 		ParticleSystem particlesAbove = transform.Find("Particles").Find("Above").gameObject.GetComponent<ParticleSystem>();
@@ -92,7 +92,12 @@ public class EffectBeatballs : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.R)) Randomize();
 
-		float[] spectrum = AudioAnalyzer.Instance.getTrimmedSpectrum(0.02f);
+		if (spectrumRangeMax!=lastSpectrumRangeMax) {
+			Randomize();
+			lastSpectrumRangeMax = spectrumRangeMax;
+		}
+
+		float[] spectrum = AudioAnalyzer.Instance.getTrimmedSpectrum(spectrumRangeMax);
 		if (spectrum.Length < 1) return;
 		float[] lightLevels = new float[lightsCount];
 		int lightSpectrumRange = Mathf.FloorToInt(spectrum.Length / lightsCount); //some remainders from the upper edge of the spectrom get lost here
@@ -118,6 +123,6 @@ public class EffectBeatballs : MonoBehaviour {
 		float floorIntensity = AudioAnalyzer.Instance.maxV;
 		//if (floorIntensity < 0.2f) floorIntensity = 0.02f;
 		//floorIntensity *= (floorIntensity > 0.8f) ? 3 : 0.02f;
-		floor.setLevel(floorIntensity);
+		floorLight.setLevel(floorIntensity);
 	}
 }
