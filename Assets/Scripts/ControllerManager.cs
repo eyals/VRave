@@ -34,16 +34,17 @@ public class ControllerManager : Singleton<ControllerManager> {
 
 		Transform RightHandAnchor = GameObject.Find("RightHandAnchor").transform;
 		Transform LeftHandAnchor = GameObject.Find("LeftHandAnchor").transform;
-		//primaryHand = Instantiate(Resources.Load("PrimaryHand") as GameObject, rightHanded ? RightHandAnchor : LeftHandAnchor);
-		//secondaryHand = Instantiate(Resources.Load("SecondaryHand") as GameObject, rightHanded ? LeftHandAnchor : RightHandAnchor);
-		/*
 		primaryHand = GameObject.Find("PrimaryHand");
 		secondaryHand = GameObject.Find("SecondaryHand");
-		primaryHand.transform.parent = rightHanded ? RightHandAnchor : LeftHandAnchor;
-		secondaryHand.transform.parent = rightHanded ? LeftHandAnchor : RightHandAnchor;
+		if (primaryHand) {
+			primaryHand.transform.parent = rightHanded ? RightHandAnchor : LeftHandAnchor;
+			primaryHand.transform.localPosition = Vector3.zero;
+		}
+		if (secondaryHand) {
+			secondaryHand.transform.parent = rightHanded ? LeftHandAnchor : RightHandAnchor;
+			secondaryHand.transform.localPosition = Vector3.zero;
+		}
 
-		primaryHand.transform.localPosition = secondaryHand.transform.localPosition = Vector3.zero;
-		*/
 
 		primaryController = (rightHanded) ? OVRInput.Controller.RTouch : OVRInput.Controller.LTouch;
 		secondaryController = (!rightHanded) ? OVRInput.Controller.RTouch : OVRInput.Controller.LTouch;

@@ -26,6 +26,8 @@ public class EffectBeatballs : MonoBehaviour {
 			light.name = "light" + i;
 			light.transform.parent = lights;
 		}
+		EventManager.StartListening("primaryTopButtonPressed", Randomize);
+		EventManager.StartListening("HandBoom", handBoom);
 		Randomize();
 	}
 
@@ -38,7 +40,6 @@ public class EffectBeatballs : MonoBehaviour {
 		float maxHue, maxColorS, maxColorV;
 		Color.RGBToHSV(colorRangeMin, out minHue, out minColorS, out minColorV);
 		Color.RGBToHSV(colorRangeMax, out maxHue, out maxColorS, out maxColorV);
-		print(minHue + "," + maxHue);
 
 		for (var i = 0; i < lightsCount; i++) {
 			SoundLight sl = lights.Find("light" + i).GetComponent<SoundLight>();
@@ -124,5 +125,12 @@ public class EffectBeatballs : MonoBehaviour {
 		//if (floorIntensity < 0.2f) floorIntensity = 0.02f;
 		//floorIntensity *= (floorIntensity > 0.8f) ? 3 : 0.02f;
 		floorLight.setLevel(floorIntensity);
+	}
+
+	private void handBoom() {
+		Transform boomSource = transform.Find("Boom");
+		ParticleSystem boomParticles = boomSource.gameObject.GetComponent<ParticleSystem>();
+		boomSource.position = ControllerManager.Instance.primaryHand.transform.position;
+		boomParticles.Play();
 	}
 }
