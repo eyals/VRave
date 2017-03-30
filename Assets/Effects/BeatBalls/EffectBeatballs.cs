@@ -24,6 +24,7 @@ public class EffectBeatballs : MonoBehaviour {
 	private float maxHue, maxColorS, maxColorV;
 	public GameObject handObj;
 	private HandGesture handGestureR, handGestureL;
+	ParticleSystem particlesSides, particlesAbove;
 
 	private void Start() {
 		lights = new GameObject("lights").transform;
@@ -45,20 +46,19 @@ public class EffectBeatballs : MonoBehaviour {
 		handGestureR = handR.GetComponent<HandGesture>();
 		handGestureL = handL.GetComponent<HandGesture>();
 
+		particlesSides = transform.Find("Particles").Find("Sides").gameObject.GetComponent<ParticleSystem>();
+		particlesAbove = transform.Find("Particles").Find("Above").gameObject.GetComponent<ParticleSystem>();
+
 		EventManager.StartListening("primaryTopButtonPressed", randomize);
 		//EventManager.StartListening("HandBoom", handBoom);
 		//EventManager.StartListening("BoomLow", handBoom);
-		EventManager.StartListening("BoomMed", randomize);
+		EventManager.StartListening("BoomMed", randomizeColors);
 		randomize();
 	}
 
 	private void randomize() {
 
 		
-		colorRangeMin = Random.ColorHSV();
-		colorRangeMax = Random.ColorHSV();
-		Color.RGBToHSV(colorRangeMin, out minHue, out minColorS, out minColorV);
-		Color.RGBToHSV(colorRangeMax, out maxHue, out maxColorS, out maxColorV);
 
 		for (var i = 0; i < lightsCount; i++) {
 			SoundLight sl = lights.Find("light" + i).GetComponent<SoundLight>();
@@ -80,14 +80,26 @@ public class EffectBeatballs : MonoBehaviour {
 		handGestureR.color = randomColorBetweetHues(minHue, maxHue);
 		handGestureL.color = randomColorBetweetHues(minHue, maxHue);
 
+		randomizeColors();
 		randomizeFloor();
 
-		ParticleSystem particlesSides = transform.Find("Particles").Find("Sides").gameObject.GetComponent<ParticleSystem>();
-		ParticleSystem particlesAbove = transform.Find("Particles").Find("Above").gameObject.GetComponent<ParticleSystem>();
+	}
+
+	private void randomizeColors() {
+		colorRangeMin = Random.ColorHSV();
+		colorRangeMax = Random.ColorHSV();
+		Color.RGBToHSV(colorRangeMin, out minHue, out minColorS, out minColorV);
+		Color.RGBToHSV(colorRangeMax, out maxHue, out maxColorS, out maxColorV);
+		for (var i = 0; i < lightsCount; i++) {
+			SoundLight sl = lights.Find("light" + i).GetComponent<SoundLight>();
+			//float frequencyIndex = Mathf.FloorToInt(i / AudioAnalyzer.Instance.SpectrumSize);
+			//float frequencyRatio = frequencyIndex / (lightsCount / AudioAnalyzer.Instance.SpectrumSize);//translates frequencyIndex to 0..1 
+			sl.lightColor = randomColorBetweetHues(minHue, maxHue);
+			//sl.lightColor = colorLerpBetweetHues(minHue, maxHue, frequencyRatio); 
+		}
 		particlesSides.startColor = randomColorBetweetHues(minHue, maxHue);
 		particlesAbove.startColor = randomColorBetweetHues(minHue, maxHue);
 	}
-
 	private void randomizeFloor() {
 		floorLight = transform.Find("Floor").GetComponent<SoundLight>();
 		floorLight.lightColor = randomColorBetweetHues(minHue, maxHue);
