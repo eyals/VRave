@@ -25,15 +25,15 @@ public class ControllerManager : Singleton<ControllerManager> {
 		initButtons();
 		initEventTrigger();
 		triggerSensitivity = 0.9f;
-		hideOculusHandMeshes();
+		//hideOculusHandMeshes();
 		//initListeners();
 	}
 
 	void initButtons() {
-		hideOculusHandMeshes();
+		//hideOculusHandMeshes();
 
-		Transform RightHandAnchor = GameObject.Find("RightHandAnchor").transform;
-		Transform LeftHandAnchor = GameObject.Find("LeftHandAnchor").transform;
+		Transform RightHandAnchor = GameObject.Find("RightHandAnchor") ? GameObject.Find("RightHandAnchor").transform : new GameObject("RightHandAnchor").transform;
+		Transform LeftHandAnchor = GameObject.Find("LeftHandAnchor") ? GameObject.Find("LeftHandAnchor").transform : new GameObject("LeftHandAnchor").transform;
 		primaryHand = GameObject.Find("PrimaryHand");
 		secondaryHand = GameObject.Find("SecondaryHand");
 		if (!primaryHand) {

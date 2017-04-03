@@ -82,15 +82,15 @@ public class AudioAnalyzer : Singleton<AudioAnalyzer> {
 
 
 		if (volAdd > 0.25f) {
-			print("h " + volAdd);
+			//print("h " + volAdd);
 			EventManager.TriggerEvent("BoomHigh");
 		}
 		else if (volAdd > 0.2f) {
-			print("m " + volAdd);
+			//print("m " + volAdd);
 			EventManager.TriggerEvent("BoomMed");
 		}
 		else if (volAdd > 0.15f) {
-			print("l " + volAdd);
+			//print("l " + volAdd);
 			EventManager.TriggerEvent("BoomLow");
 		}
 	}

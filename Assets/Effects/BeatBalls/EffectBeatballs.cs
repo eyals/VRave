@@ -25,6 +25,8 @@ public class EffectBeatballs : MonoBehaviour {
 	public GameObject handObj;
 	private HandGesture handGestureR, handGestureL;
 	ParticleSystem particlesSides, particlesAbove;
+	public enum HandSource { oculusTouch, leapMotion };
+	public HandSource handSource;
 
 	private void Start() {
 		lights = new GameObject("lights").transform;
@@ -39,13 +41,14 @@ public class EffectBeatballs : MonoBehaviour {
 
 		AudioAnalyzer.Instance.SpectrumSize = spectrumRangeMax;
 
-		GameObject handR = Instantiate(handObj, ControllerManager.Instance.primaryHand.transform);
-		GameObject handL = Instantiate(handObj, ControllerManager.Instance.secondaryHand.transform);
-		handR.transform.localPosition = Vector3.zero;
-		handL.transform.localPosition = Vector3.zero;
-		handGestureR = handR.GetComponent<HandGesture>();
-		handGestureL = handL.GetComponent<HandGesture>();
-
+		if (handSource == HandSource.oculusTouch){
+			GameObject handR = Instantiate(handObj, ControllerManager.Instance.primaryHand.transform);
+			GameObject handL = Instantiate(handObj, ControllerManager.Instance.secondaryHand.transform);
+			handR.transform.localPosition = Vector3.zero;
+			handL.transform.localPosition = Vector3.zero;
+			handGestureR = handR.GetComponent<HandGesture>();
+			handGestureL = handL.GetComponent<HandGesture>();
+		}
 		particlesSides = transform.Find("Particles").Find("Sides").gameObject.GetComponent<ParticleSystem>();
 		particlesAbove = transform.Find("Particles").Find("Above").gameObject.GetComponent<ParticleSystem>();
 
@@ -77,8 +80,8 @@ public class EffectBeatballs : MonoBehaviour {
 			sl.reset();
 		}
 
-		handGestureR.color = randomColorBetweetHues(minHue, maxHue);
-		handGestureL.color = randomColorBetweetHues(minHue, maxHue);
+		if (handGestureR) handGestureR.color = randomColorBetweetHues(minHue, maxHue);
+		if (handGestureL) handGestureL.color = randomColorBetweetHues(minHue, maxHue);
 
 		randomizeColors();
 		randomizeFloor();

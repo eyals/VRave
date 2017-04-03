@@ -16,7 +16,9 @@ public class HandGesture : MonoBehaviour {
 	Transform boom;
 	ParticleSystem boomParticles;
 	ParticleSystem handParticles;
+	[HideInInspector]
 	public float colorMin, colorMax;
+	[HideInInspector]
 	public Color color;
 
 	void Start() {
