@@ -13,6 +13,7 @@ public class LeapHands : Singleton<LeapHands> {
 	
 	// Update is called once per frame
 	void Update () {
-		print(GameObject.Find("LeapHandL"));
+	if (GameObject.Find("HandAttachmentsL"))
+		print(GameObject.Find("green cyl").transform.position);
 	}
 }
