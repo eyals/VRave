@@ -10,10 +10,11 @@ public class LeapHands : Singleton<LeapHands> {
 	void Start () {
 		
 	}
-	
+
 	// Update is called once per frame
-	void Update () {
-	if (GameObject.Find("HandAttachmentsL"))
-		print(GameObject.Find("green cyl").transform.position);
+	void Update() {
+		if (GameObject.Find("HandAttachmentsL")) {
+			//print(GameObject.Find("HandL").transform.position.x);
+		}
 	}
 }

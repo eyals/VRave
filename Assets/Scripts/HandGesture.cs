@@ -25,7 +25,6 @@ public class HandGesture : MonoBehaviour {
 		lastHandPos = transform.position;
 		lastHandVelocity = Vector3.zero;
 		boom = transform.Find("Boom");
-		print("#" + boom);
 		boomParticles = boom.gameObject.GetComponent<ParticleSystem>();
 		handParticles = transform.gameObject.GetComponent<ParticleSystem>();
 	}
@@ -35,7 +34,6 @@ public class HandGesture : MonoBehaviour {
 		currentHandVelocity = currentHandPos - lastHandPos;
 		currentHandVelocityMagnitude = currentHandVelocity.magnitude;
 		float velocityChange = Vector3.Distance(lastHandVelocity, currentHandVelocity);
-		//print(velocityChange);
 		if (velocityChange > handBoomThreshold) {
 			handBoom();
 		}
@@ -55,10 +53,16 @@ public class HandGesture : MonoBehaviour {
 		timeSinceHandBoom += Time.deltaTime;
 		if (timeSinceHandBoom < minTimeBetweenHandBooms) return;
 		timeSinceHandBoom = 0;
-
+		/*
 		boom.transform.eulerAngles = World.camera.eulerAngles;
 		boomParticles.startColor = color;
 		boomParticles.Play();
+		*/
+		GameObject boomSource = GameObject.Find("handBoom");
+		boomSource.transform.position = transform.position;
+		boomSource.transform.eulerAngles = World.camera.eulerAngles;
+		boomSource.GetComponent<ParticleSystem>().Play();
+
 	}
 
 }
