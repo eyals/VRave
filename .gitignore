@@ -24,13 +24,12 @@ ExportedObj/
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
-Assets/Music/DCR342.mp3
-Assets/Music/DCR342.mp3.meta
 Assets/WebPlayerTemplates/
 Assets/WebPlayerTemplates.meta
 Assets/OvrAvatar/
-Assets/Music/
+Assets/Music/archive
 Assets/LeapMotion/
 Assets/LeapMotion.meta
 Assets/Plugins/x86.meta
 Assets/Plugins/x86_64.meta
+Assets/Music/archive.meta
