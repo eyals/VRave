@@ -84,7 +84,6 @@ public class EffectBeatballs : MonoBehaviour {
 		if (handGestureL) handGestureL.color = randomColorBetweetHues(minHue, maxHue);
 
 		randomizeColors();
-		randomizeFloor();
 
 	}
 
@@ -102,6 +101,7 @@ public class EffectBeatballs : MonoBehaviour {
 		}
 		particlesSides.startColor = randomColorBetweetHues(minHue, maxHue);
 		particlesAbove.startColor = randomColorBetweetHues(minHue, maxHue);
+		randomizeFloor();
 	}
 	private void randomizeFloor() {
 		floorLight = transform.Find("Floor").GetComponent<SoundLight>();

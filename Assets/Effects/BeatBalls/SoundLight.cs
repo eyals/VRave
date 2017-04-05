@@ -14,9 +14,9 @@ public class SoundLight : MonoBehaviour {
 	private float minLevel = 0.02f;
 	public Color lightColor;
 	private Material bulbMaterial;
-	private float lightIntensityFacor = 5f;
-	private float lightScaleFacor = 3f;
-	public float audioMinThreshold = 0.05f;
+	private float lightIntensityFacor = 3f;
+	private float lightScaleFacor = 2f;
+	public float audioMinThreshold = 0.03f;
 	public bool enableScale = true;
 	public bool enableMove = true;
 	public bool enableShake = true;
@@ -24,11 +24,11 @@ public class SoundLight : MonoBehaviour {
 	Transform pole;
 	private Vector3 lightPos;
 	public float maxHeightChange = 1f;
-	public float retractSpeedFactor = 1;
+	public float retractSpeedFactor = 1f;
 	public float distanceFromViewer;
 	public float height;
 	private ParticleSystem sparks;
-	private float sparksThreshold = 0.3f;
+	private float sparksThreshold = 0.35f;
 	private float shakeThreshold = 0.3f;
 	public float hue;
 	public float targetLevel;
